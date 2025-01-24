@@ -23,7 +23,7 @@ export async function readUsers(page, page_size) {
     return await api.get("/get_users/", {
       params: {
         page: page,
-        page_size: page_size,
+        page_size: page_size,                
       },
     });
   } catch (error) {
