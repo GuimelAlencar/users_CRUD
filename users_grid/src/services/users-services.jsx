@@ -34,7 +34,7 @@ export async function readUsers(page, page_size) {
 
 export async function updateUser(id, data) {
   try {
-    return await api.put(`/users/${id}`, data); // Changed to PUT for better RESTful standards
+    return await api.patch(`/users/${id}`, data);
   } catch (error) {
     console.error("Error updating user:", error);
     throw error;
