@@ -16,7 +16,7 @@ import {
   TableRow,
   Typography,
   Box,
-  TablePagination,
+  Pagination,
 } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 
@@ -25,6 +25,7 @@ import { readUsers } from "../services/users-services";
 import CreateUserModal from "../components/CreateUserModal";
 import UpdateUserModal from "../components/UpdateUserModal";
 import DeleteUserModal from "../components/DeleteUserModal";
+import { alignProperty } from "@mui/material/styles/cssUtils";
 TableFooter;
 function UsersGrid() {
   const [users, setUsers] = useState([]);
@@ -37,11 +38,11 @@ function UsersGrid() {
 
   // Pagination
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const rowsPerPage = 5
 
   useEffect(() => {
     getUsers();
-  }, []);
+  }, [page]);
 
   async function getUsers() {
     const toastGetUsers = toast.loading("Requesting users...");
@@ -56,7 +57,7 @@ function UsersGrid() {
         render: response.data.message,
         type: "success",
         isLoading: false,
-        autoClose: 2000,
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
       });
@@ -74,11 +75,6 @@ function UsersGrid() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
   };
 
   return (
@@ -116,62 +112,61 @@ function UsersGrid() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.map((item) => (
-                  <TableRow key={item.user_id}>
-                    <TableCell>{item.user_id}</TableCell>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>{item.email}</TableCell>
-                    <TableCell>{item.birth_date}</TableCell>
-                    <TableCell>{item.phone_number}</TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        color="info"
-                        size="small"
-                        onClick={() => {
-                          setSelectedUserId(item.user_id);
-                          setShowUpdateUserModal(true);
-                        }}
-                      >
-                        <EditIcon />
-                      </Button>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        color="error"
-                        size="small"
-                        onClick={() => {
-                          setSelectedUserId(item.user_id);
-                          setShowDeleteUserModal(true);
-                        }}
-                      >
-                        <DeleteIcon />
-                      </Button>
+                {users.length > 0 ? (
+                  users.map((item) => (
+                    <TableRow key={item.user_id}>
+                      <TableCell>{item.user_id}</TableCell>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.email}</TableCell>
+                      <TableCell>{item.birth_date}</TableCell>
+                      <TableCell>{item.phone_number}</TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="contained"
+                          color="info"
+                          size="small"
+                          onClick={() => {
+                            setSelectedUserId(item.user_id);
+                            setShowUpdateUserModal(true);
+                          }}
+                        >
+                          <EditIcon />
+                        </Button>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="contained"
+                          color="error"
+                          size="small"
+                          onClick={() => {
+                            setSelectedUserId(item.user_id);
+                            setShowDeleteUserModal(true);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      No users found.
                     </TableCell>
                   </TableRow>
-                ))}
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    count={count}
-                    rowsPerPage={rowsPerPage}
-                    page={page - 1}
-                    slotProps={{
-                      select: {
-                        inputProps: {
-                          "aria-label": "rows per page",
-                        },
-                        native: true,
-                      },
-                    }}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                  />
-                </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
+          {/* Centralização da paginação */}
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Pagination
+              count={Math.ceil(count/rowsPerPage)}
+              defaultPage={1}
+              page={page}
+              onChange={handleChangePage}
+            />
+          </Box>
         </Paper>
 
         <CreateUserModal
